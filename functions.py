@@ -35,10 +35,8 @@ def initial_conditions(A, x0, sigma_x, k0, w0, L, dt, tfinal, dx):
 
     
     '''
-    Tsteps = int(tfinal/dt)
-    Xsteps = int(L/dx) + 1
 
-    print('L is: ', L)
+    Xsteps = int(L/dx) + 1
 
     x = np.linspace(-L/2, L/2, Xsteps+1) 
 

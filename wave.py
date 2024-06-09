@@ -25,8 +25,7 @@ A = 1 / (2*np.pi*sigma_x**2)**0.25
 
 Tsteps = int(tfinal/dt) 
 Xsteps = int(L/dx) + 1
-print('Number of Timesteps',Tsteps)               # Number of steps: 10000000
-#Tsteps = 10000
+
 
 welcome(integrate, dt, dx, L, A, x0, sigma_x, k0, w0, tfinal)
 
@@ -43,7 +42,7 @@ image_files = []
 
 
 # Go to pics directory
-os.chdir('data')
+os.chdir('out')
 
 
 for i in range(0,Tsteps):
@@ -57,8 +56,6 @@ for i in range(0,Tsteps):
     
     norma.append(norm(psiI, psiR))
 
-
-print('len(norma)',len(norma))
 
     # Create the GIF using the image files
 with imageio.get_writer('wavepacket.gif', mode='I') as writer:
@@ -74,9 +71,6 @@ data = np.column_stack((time, norma))
 # Save the data to a file
 np.savetxt('output.txt', data, delimiter='\t', header='time\tnorma', comments='')
 
-print('len(x)', len(x))
-
-norma = np.round(norma)
 
 plt.figure()
 plt.plot(time, norma)
