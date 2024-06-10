@@ -8,9 +8,9 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Equation of motion of real part and imaginary part
-integrate = 'rk4'
-potential = 'free'
-dt = 1e-5
+integrate = 'rk4'           # 'euler' or 'rk4'
+potential = 'barrier'       # 'free' or 'barrier'
+dt = 1e-2
 dx = 0.1
 m = 1
 h_bar = 1
@@ -18,8 +18,8 @@ L = 100
 sigma_x = 5
 w0 = 2
 k0 = 3
-x0 = 20
-tfinal = 2
+x0 = -20
+tfinal = 6000
 
 A = 1 / (2*np.pi*sigma_x**2)**0.25
 

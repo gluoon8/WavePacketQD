@@ -23,7 +23,7 @@ def get_potential(potential, x, Xsteps, w0):
 
     elif potential == 'barrier':
         V = np.zeros(Xsteps+1)
-        V[int(Xsteps/2):int(2*Xsteps/3)] = 0.15  # Barrier in the middle of the grid.
+        V[int(Xsteps/2):int(Xsteps/2)+10] = 0.15  # Barrier in the middle of the grid.
 
         pot = 1
 
