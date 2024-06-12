@@ -13,8 +13,8 @@ def imaginary_psi(A, x0, sigma_x, k0, w0, x, t):
 def dens_prob(A, x0, sigma_x, x):
     return A**2*np.exp(-(x-x0)**2/(sigma_x**2))
 
-def norm(psiI,psiR):
-    return np.sum(abs(psiI)**2 + abs(psiR)**2) 
+def norm(psiI,psiR, dx):
+    return np.sum(abs(psiI)**2 + abs(psiR)**2) * dx 
 
 def get_potential(potential, x, Xsteps, w0):
     if potential == 'free':
@@ -23,7 +23,7 @@ def get_potential(potential, x, Xsteps, w0):
 
     elif potential == 'barrier':
         V = np.zeros(Xsteps+1)
-        V[int(Xsteps/2):int(Xsteps/2)+10] = 0.15  # Barrier in the middle of the grid.
+        V[int(Xsteps/2):int(Xsteps/2)+50] = 6  # Barrier in the middle of the grid.
 
         pot = 1
 
@@ -125,7 +125,7 @@ def compute_k(psiR, psiI, psiR_aux, psiI_aux, dt, dx, L, V):
     h_bar = 1
     m = 1
     Xsteps = int(L/dx)
-    factor = dt*h_bar/(2*m * dx**2)
+    factor = h_bar/(2*m * dx**2)
 
 
     k1r = np.zeros(len(psiR))
@@ -231,7 +231,7 @@ def plot_wave_packet(x, psiR, psiI, i, dt,pot, V):
         plt.plot(x, V, label='Barrier')
     plt.legend()
     plt.title(f'Time: {i*dt:2f}')
-    plt.ylim(-0.3, 0.3)
+    plt.ylim(-0.5, 0.5)
     filename = f'wavepacket{i}.png'
     plt.savefig(filename)
     plt.close()

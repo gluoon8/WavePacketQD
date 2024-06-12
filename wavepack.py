@@ -10,7 +10,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 # Equation of motion of real part and imaginary part
 integrate = 'rk4'           # 'euler' or 'rk4'
 potential = 'barrier'       # 'free' or 'barrier'
-dt = 1e-2
+dt = 1e-4
 dx = 0.1
 m = 1
 h_bar = 1
@@ -19,7 +19,7 @@ sigma_x = 5
 w0 = 2
 k0 = 3
 x0 = -20
-tfinal = 3000
+tfinal = 40
 
 A = 1 / (np.pi*sigma_x**2)**0.25
 
@@ -52,10 +52,10 @@ for i in range(0,Tsteps):
     if i % 10000 == 0:
         filename = plot_wave_packet(x, psiR, psiI, i, dt, pot, V)
         image_files.append(filename)
-    print('Time step: ', i)
+    #print('Time step: ', i)
     psiR, psiI, psiR_aux, psiI_aux = integrator(psiR, psiR_aux, psiI, psiI_aux, dt, dx, L, integrate, V)
-    
-    norma.append(norm(psiI, psiR))
+    print('norm :', norm(psiI, psiR, dx))
+    norma.append(norm(psiI, psiR, dx))
 
 
     # Create the GIF using the image files
