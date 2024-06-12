@@ -8,9 +8,8 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Equation of motion of real part and imaginary part
-integrate = 'rk4'           # 'euler' or 'rk4'
+integrate = 'euler'           # 'euler' or 'rk4'
 potential = 'barrier'       # 'free' or 'barrier'
-dt = 1e-4
 dx = 0.1
 m = 1
 h_bar = 1
@@ -23,17 +22,11 @@ tfinal = 40
 
 A = 1 / (np.pi*sigma_x**2)**0.25
 
-
-Tsteps = int(tfinal/dt) 
-Xsteps = int(L/dx) + 1
-
-
-welcome(integrate, dt, dx, L, A, x0, sigma_x, k0, w0, tfinal, potential)
-
 #----------------Inicialització dels paquets d'ones----------------
 
-x, psiR, psiI, psiR_0, psiI_0, V, pot = initial_conditions(A, x0, sigma_x, k0, w0, L, dt, tfinal, dx, potential)
+x, psiR, psiI, psiR_0, psiI_0, V, pot, dt, Tsteps, Xsteps = initial_conditions(A, x0, sigma_x, k0, w0, L, tfinal, dx, potential, integrate)
 
+welcome(integrate, dt, dx, L, A, x0, sigma_x, k0, w0, tfinal, potential)
 
 psiR_aux = np.copy(psiR)
 psiI_aux = np.copy(psiI)
@@ -50,7 +43,7 @@ for i in range(0,Tsteps):
 
 
     if i % 10000 == 0:
-        filename = plot_wave_packet(x, psiR, psiI, i, dt, pot, V)
+        filename = plot_wave_packet(x, psiR, psiI, i, dt, pot, V, L, dx)
         image_files.append(filename)
     #print('Time step: ', i)
     psiR, psiI, psiR_aux, psiI_aux = integrator(psiR, psiR_aux, psiI, psiI_aux, dt, dx, L, integrate, V)

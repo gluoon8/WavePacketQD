@@ -16,20 +16,22 @@ def dens_prob(A, x0, sigma_x, x):
 def norm(psiI,psiR, dx):
     return np.sum(abs(psiI)**2 + abs(psiR)**2) * dx 
 
-def get_potential(potential, x, Xsteps, w0):
+def get_potential(potential, x, Xsteps, x0):
     if potential == 'free':
         V = np.zeros(Xsteps+1)
         pot = 0
 
     elif potential == 'barrier':
         V = np.zeros(Xsteps+1)
-        V[int(Xsteps/2):int(Xsteps/2)+50] = 6  # Barrier in the middle of the grid.
+        V[int(Xsteps/2):int(Xsteps/2)+50] = 4.5  # Barrier in the middle of the grid.
 
         pot = 1
 
     elif potential == 'harmonic':
         m=1
-        V = 0.5*m*w0**2*x**2
+        n = 15
+        w = 4.505 / (n + 1/2)
+        V = 0.5*m*w**2*(x-x0)**2
         pot = 2
 
     elif potential == 'well':
@@ -41,7 +43,7 @@ def get_potential(potential, x, Xsteps, w0):
 
     return V, pot
 
-def initial_conditions(A, x0, sigma_x, k0, w0, L, dt, tfinal, dx, potential):
+def initial_conditions(A, x0, sigma_x, k0, w0, L, tfinal, dx, potential, integrate):
     '''Initial conditions for the wave packet.
     
     - input:
@@ -61,10 +63,14 @@ def initial_conditions(A, x0, sigma_x, k0, w0, L, dt, tfinal, dx, potential):
 
     
     '''
-
+    if integrate == 'euler':
+        dt = 1e-5
+    elif integrate == 'rk4':
+        dt = 1e-4
 
 
     Xsteps = int(L/dx) + 1
+    Tsteps = int(tfinal/dt)
 
     x = np.linspace(-L/2, L/2, Xsteps+1) 
 
@@ -90,10 +96,11 @@ def initial_conditions(A, x0, sigma_x, k0, w0, L, dt, tfinal, dx, potential):
     plt.savefig('wavepacketinitial.png')
     plt.close()
 
-    V, pot = get_potential(potential, x, Xsteps, w0)
+    V, pot = get_potential(potential, x, Xsteps, x0)
 
 
-    return x, psiR, psiI, psiR_0, psiI_0, V, pot
+
+    return x, psiR, psiI, psiR_0, psiI_0, V, pot, dt, Tsteps, Xsteps
     
 def welcome(integrate, dt, dx, L, A, x0, sigma_x, k0, w0, tfinal, potential):
     print('----------------------')
@@ -218,7 +225,7 @@ def integrator(psiR, psiR_aux, psiI, psiI_aux, dt, dx, L, integrate, V):
 
 
 
-def plot_wave_packet(x, psiR, psiI, i, dt,pot, V):
+def plot_wave_packet(x, psiR, psiI, i, dt,pot, V, dx, L):
     '''
     Plot the wave packet at time i*dt.
 
@@ -229,6 +236,13 @@ def plot_wave_packet(x, psiR, psiI, i, dt,pot, V):
     plt.plot(x, psiI, label='psi_Im')
     if pot == 1:
         plt.plot(x, V, label='Barrier')
+    elif pot == 2:
+        plt.plot(x, V, label='Harmonic potential')
+    plt.plot(x, abs(psiR)**2 + abs(psiI)**2, label='|psi|^2')
+    # Display the transmission and reflection coefficients inside the plot.
+
+    T, R = transmission_coefficient(psiR, psiI, dx, L)
+    plt.text(0, 0.4, f'T = {T:.2f}, R = {R:.2f}', fontsize=12)
     plt.legend()
     plt.title(f'Time: {i*dt:2f}')
     plt.ylim(-0.5, 0.5)
@@ -238,3 +252,24 @@ def plot_wave_packet(x, psiR, psiI, i, dt,pot, V):
 
     return filename
 
+# Calculate the transmission coefficient and reflection coefficient for the barrier potential.
+
+def transmission_coefficient(psiR, psiI, dx, L):
+    '''Calculate the transmission coefficient for the barrier potential.
+    
+    - input:
+        psiR: array, real part of the wave packet.
+        psiI: array, imaginary part of the wave packet.
+        dx: float, spatial step.
+        L: float, length of the grid.
+    
+    - output:
+        T: float, transmission coefficient.
+        R: float, reflection coefficient.
+    
+    '''
+    Xsteps = int(L/dx)
+    T = np.sum(abs(psiI[Xsteps//2+50])**2 + abs(psiR[Xsteps//2+50])**2) * dx
+    R = np.sum(abs(psiI[Xsteps//2-50])**2 + abs(psiR[Xsteps//2-50])**2) * dx
+
+    return T, R
