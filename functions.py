@@ -230,7 +230,7 @@ def plot_wave_packet(x, psiR, psiI, i, dt,pot, V):
     if pot == 1:
         plt.plot(x, V, label='Barrier')
     plt.legend()
-    plt.title(f'Time: {i*dt:2f} s')
+    plt.title(f'Time: {i*dt:2f}')
     plt.ylim(-0.3, 0.3)
     filename = f'wavepacket{i}.png'
     plt.savefig(filename)

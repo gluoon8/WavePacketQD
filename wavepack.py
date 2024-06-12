@@ -19,9 +19,9 @@ sigma_x = 5
 w0 = 2
 k0 = 3
 x0 = -20
-tfinal = 6000
+tfinal = 3000
 
-A = 1 / (2*np.pi*sigma_x**2)**0.25
+A = 1 / (np.pi*sigma_x**2)**0.25
 
 
 Tsteps = int(tfinal/dt) 
