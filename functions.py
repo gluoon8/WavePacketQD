@@ -34,10 +34,13 @@ def get_potential(potential, x, Xsteps, x0):
         V = 0.5*m*w**2*(x-x0)**2
         pot = 2
 
-    elif potential == 'well':
-        V = np.zeros(Xsteps)
-        V[int(Xsteps/2):int(Xsteps/2)+10] = 1e6
+    elif potential ==  'morse':
+        D = 20
+        a = 0.075
+        V = D * (1 - np.exp(-a*(x-x0)))**2
         pot = 3
+
+
     else:
         raise ValueError('Potential not defined')
 
@@ -238,6 +241,12 @@ def plot_wave_packet(x, psiR, psiI, i, dt,pot, V, dx, L):
         plt.plot(x, V, label='Barrier')
     elif pot == 2:
         plt.plot(x, V, label='Harmonic potential')
+    elif pot == 3:
+        Vplot = np.copy(V)
+        Vplot = Vplot - 20000000
+        plt.plot(x, V, label='Morse potential')
+
+    
     plt.plot(x, abs(psiR)**2 + abs(psiI)**2, label='|psi|^2')
     # Display the transmission and reflection coefficients inside the plot.
 
@@ -273,3 +282,45 @@ def transmission_coefficient(psiR, psiI, dx, L):
     R = np.sum(abs(psiI[Xsteps//2-50])**2 + abs(psiR[Xsteps//2-50])**2) * dx
 
     return T, R
+
+
+def fourier_transform(psiR, psiI, dx, L):
+    '''Calculate the Fourier transform of the wave packet.
+    
+    - input:
+        psiR: array, real part of the wave packet.
+        psiI: array, imaginary part of the wave packet.
+        dx: float, spatial step.
+        L: float, length of the grid.
+    
+    - output:
+        k: array, wave number grid.
+        psiR_k: array, real part of the wave packet in the wave number space.
+        psiI_k: array, imaginary part of the wave packet in the wave number space.
+    
+    '''
+    Xsteps = int(L/dx)
+    k = np.fft.fftfreq(Xsteps+2, d=dx)
+    k = np.fft.fftshift(k)
+    psiR_k = np.fft.fft(psiR)
+    psiI_k = np.fft.fft(psiI)
+
+    return k, psiR_k, psiI_k
+
+def plot_fourier_transform(k, psiR_k, psiI_k):
+    '''Plot the Fourier transform of the wave packet.
+    
+    - input:
+        k: array, wave number grid.
+        psiR_k: array, real part of the wave packet in the wave number space.
+        psiI_k: array, imaginary part of the wave packet in the wave number space.
+    
+    '''
+    plt.figure()
+    plt.plot(k, psiR_k, label='psi_Re(k)')
+    plt.plot(k, psiI_k, label='psi_Im(k)')
+    plt.legend()
+    plt.title('Fourier transform of the wave packet')
+    plt.savefig('fouriertransform.png')
+    plt.close()
+

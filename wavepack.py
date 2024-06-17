@@ -8,8 +8,8 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Equation of motion of real part and imaginary part
-integrate = 'euler'           # 'euler' or 'rk4'
-potential = 'barrier'       # 'free' or 'barrier'
+integrate = 'rk4'           # 'euler' or 'rk4'
+potential = 'free'       # 'free' or 'barrier'
 dx = 0.1
 m = 1
 h_bar = 1
@@ -18,7 +18,7 @@ sigma_x = 5
 w0 = 2
 k0 = 3
 x0 = -20
-tfinal = 40
+tfinal = 10
 
 A = 1 / (np.pi*sigma_x**2)**0.25
 
@@ -45,6 +45,9 @@ for i in range(0,Tsteps):
     if i % 10000 == 0:
         filename = plot_wave_packet(x, psiR, psiI, i, dt, pot, V, L, dx)
         image_files.append(filename)
+
+
+
     #print('Time step: ', i)
     psiR, psiI, psiR_aux, psiI_aux = integrator(psiR, psiR_aux, psiI, psiI_aux, dt, dx, L, integrate, V)
     print('norm :', norm(psiI, psiR, dx))
@@ -57,6 +60,12 @@ with imageio.get_writer('wavepacket.gif', mode='I') as writer:
         image = imageio.imread(filename)
         writer.append_data(image)
 
+k, psiR_k, psiI_k = fourier_transform(psiR, psiI, dx, L)
+print('k:', k.shape)
+print('psiR_k:', psiR_k.shape)
+print('psiI_k:', psiI_k.shape)
+
+plot_fourier_transform(k, psiR_k, psiI_k)
 
 # Save the data to a file
 time = np.linspace(0, Tsteps,Tsteps)
