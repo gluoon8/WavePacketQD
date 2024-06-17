@@ -8,7 +8,11 @@ help:
 	@echo "make clean - remove all output files"
 
 run: 
-	./python wavepack.py
+	python3 wavepack.py
+	make clean
+
+norm:
+	python3 norm.py
 
 prerequisites:
 	pip install numpy
@@ -17,4 +21,4 @@ prerequisites:
 	pip install imageio
 
 clean:
-	rm -f out/*.png
+	rm -f out/wave*.png
