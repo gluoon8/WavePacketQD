@@ -23,7 +23,7 @@ def get_potential(potential, x, Xsteps, x0):
 
     elif potential == 'barrier':
         V = np.zeros(Xsteps+1)
-        V[int(Xsteps/2):int(Xsteps/2)+50] = 4.5  # Barrier in the middle of the grid.
+        V[int(Xsteps/2):int(Xsteps/2)+50] = 4  # Barrier in the middle of the grid.
 
         pot = 1
 
@@ -241,17 +241,21 @@ def plot_wave_packet(x, psiR, psiI, i, dt,pot, V, dx, L):
         plt.plot(x, psiR + 4.5, label='psi_Re')
         plt.plot(x, psiI + 4.5, label='psi_Im')
         plt.plot(x, abs(psiR)**2 + abs(psiI)**2 + 4.5, label='|psi|^2')
+        plt.ylim(-0.5, 7)
+
     elif pot == 2:
         plt.plot(x, V, label='Harmonic potential')
         plt.plot(x, psiR + 4.5, label='psi_Re')
         plt.plot(x, psiI + 4.5, label='psi_Im')
         plt.plot(x, abs(psiR)**2 + abs(psiI)**2+ 4.5, label='|psi|^2')
+        plt.ylim(-0.5, 7)
     elif pot == 3:
         Vplot = np.copy(V)
         plt.plot(x, Vplot, label='Morse potential')
         plt.plot(x, psiR + 4.5, label='psi_Re')
         plt.plot(x, psiI + 4.5, label='psi_Im')
         plt.plot(x, abs(psiR)**2 + abs(psiI)**2+ 4.5, label='|psi|^2')
+        plt.ylim(-0.5, 10)
     else:
         plt.plot(x, psiR, label='psi_Re')
         plt.plot(x, psiI, label='psi_Im')
@@ -260,8 +264,9 @@ def plot_wave_packet(x, psiR, psiI, i, dt,pot, V, dx, L):
     T, R = transmission_coefficient(psiR, psiI, dx, L)
     plt.text(0, 0.4, f'T = {T:.2f}, R = {R:.2f}', fontsize=12)
     plt.legend()
+    plt.xlim(-L/2 * 1000, L/2 * 1000)
     plt.title(f'Time: {i*dt:2f}')
-    plt.ylim(-0.5, 5)
+    
     filename = f'wavepacket{i}.png'
     plt.savefig(filename)
     plt.close()
