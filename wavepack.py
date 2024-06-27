@@ -9,7 +9,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 # Equation of motion of real part and imaginary part
 integrate = 'rk4'           # 'euler' or 'rk4'
-potential = 'free'       # 'free' or 'barrier'
+potential = 'morse'       # 'free' or 'barrier'
 dx = 0.1
 m = 1
 h_bar = 1
@@ -18,7 +18,7 @@ sigma_x = 5
 w0 = 2
 k0 = 3
 x0 = -20
-tfinal = 10
+tfinal = 100
 
 A = 1 / (np.pi*sigma_x**2)**0.25
 
@@ -45,12 +45,16 @@ for i in range(0,Tsteps):
     if i % 10000 == 0:
         filename = plot_wave_packet(x, psiR, psiI, i, dt, pot, V, L, dx)
         image_files.append(filename)
+        print('Process: ', i/Tsteps*100, '%')
+
+    # Print the percentage of the process if the time step is a multiple of 1000
 
 
 
     #print('Time step: ', i)
     psiR, psiI, psiR_aux, psiI_aux = integrator(psiR, psiR_aux, psiI, psiI_aux, dt, dx, L, integrate, V)
-    print('norm :', norm(psiI, psiR, dx))
+    # print('norm :', norm(psiI, psiR, dx))
+
     norma.append(norm(psiI, psiR, dx))
 
 
