@@ -35,7 +35,7 @@ def get_potential(potential, x, Xsteps, x0):
         pot = 2
 
     elif potential ==  'morse':
-        D = 20
+        D = 10
         a = 0.075
         V = D * (1 - np.exp(-a*(x-x0)))**2
         pot = 3
@@ -235,26 +235,33 @@ def plot_wave_packet(x, psiR, psiI, i, dt,pot, V, dx, L):
     '''
 
     plt.figure()
-    plt.plot(x, psiR, label='psi_Re')
-    plt.plot(x, psiI, label='psi_Im')
+
     if pot == 1:
         plt.plot(x, V, label='Barrier')
+        plt.plot(x, psiR + 4.5, label='psi_Re')
+        plt.plot(x, psiI + 4.5, label='psi_Im')
+        plt.plot(x, abs(psiR)**2 + abs(psiI)**2 + 4.5, label='|psi|^2')
     elif pot == 2:
         plt.plot(x, V, label='Harmonic potential')
+        plt.plot(x, psiR + 4.5, label='psi_Re')
+        plt.plot(x, psiI + 4.5, label='psi_Im')
+        plt.plot(x, abs(psiR)**2 + abs(psiI)**2+ 4.5, label='|psi|^2')
     elif pot == 3:
         Vplot = np.copy(V)
-        Vplot = Vplot - 20000000
-        plt.plot(x, V, label='Morse potential')
-
+        plt.plot(x, Vplot, label='Morse potential')
+        plt.plot(x, psiR + 4.5, label='psi_Re')
+        plt.plot(x, psiI + 4.5, label='psi_Im')
+        plt.plot(x, abs(psiR)**2 + abs(psiI)**2+ 4.5, label='|psi|^2')
+    else:
+        plt.plot(x, psiR, label='psi_Re')
+        plt.plot(x, psiI, label='psi_Im')
+        plt.plot(x, abs(psiR)**2 + abs(psiI)**2, label='|psi|^2')
     
-    plt.plot(x, abs(psiR)**2 + abs(psiI)**2, label='|psi|^2')
-    # Display the transmission and reflection coefficients inside the plot.
-
     T, R = transmission_coefficient(psiR, psiI, dx, L)
     plt.text(0, 0.4, f'T = {T:.2f}, R = {R:.2f}', fontsize=12)
     plt.legend()
     plt.title(f'Time: {i*dt:2f}')
-    plt.ylim(-0.5, 0.5)
+    plt.ylim(-0.5, 5)
     filename = f'wavepacket{i}.png'
     plt.savefig(filename)
     plt.close()
