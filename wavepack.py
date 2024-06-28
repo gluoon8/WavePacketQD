@@ -18,7 +18,7 @@ sigma_x = 5
 w0 = 2
 k0 = 3
 x0 = -20
-tfinal = 50
+tfinal = 24
 
 #A = 1 / (np.pi*sigma_x**2)**0.25
 
@@ -34,10 +34,11 @@ psiI_aux = np.copy(psiI)
 norma = []
 image_files = []
 
-
 # Go to pics directory
 os.chdir('out')
  
+write_mom('initialFT.dat',psiI, psiR, L)
+
 
 for i in range(0,Tsteps):
 
@@ -53,7 +54,7 @@ for i in range(0,Tsteps):
 
     #print('Time step: ', i)
     psiR, psiI, psiR_aux, psiI_aux = integrator(psiR, psiR_aux, psiI, psiI_aux, dt, dx, L, integrate, V)
-    # print('norm :', norm(psiI, psiR, dx))
+    print('norm :', norm(psiI, psiR, dx))
 
     norma.append(norm(psiI, psiR, dx))
 
@@ -64,12 +65,14 @@ with imageio.get_writer('wavepacket.gif', mode='I') as writer:
         image = imageio.imread(filename)
         writer.append_data(image)
 
-k, psiR_k, psiI_k = fourier_transform(psiR, psiI, dx, L)
-print('k:', k.shape)
-print('psiR_k:', psiR_k.shape)
-print('psiI_k:', psiI_k.shape)
+cR, cI = fourier_transform(k0, psiR, psiI, L)
 
-plot_fourier_transform(k, psiR_k, psiI_k)
+print('cR:', cR)
+print('cI:', cI)
+print('cR^2 + cI^2:', cR**2 + cI**2)
+
+# Write
+write_mom('finalFT.dat',psiI, psiR, L)
 
 # Save the data to a file
 time = np.linspace(0, Tsteps,Tsteps)

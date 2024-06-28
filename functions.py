@@ -309,43 +309,47 @@ def transmission_coefficient(psiR, psiI, dx, L):
     return T, R
 
 
-def fourier_transform(psiR, psiI, dx, L):
-    '''Calculate the Fourier transform of the wave packet.
+def fourier_transform(k_in, psiR, psiI, L):
+    '''Calculate the Fourier coefficients for a given wave number k_in.
     
     - input:
-        psiR: array, real part of the wave packet.
-        psiI: array, imaginary part of the wave packet.
-        dx: float, spatial step.
+        k_in: float, input wave number.
+        psiR: numpy array, real part of the wave packet.
+        psiI: numpy array, imaginary part of the wave packet.
         L: float, length of the grid.
     
     - output:
-        k: array, wave number grid.
-        psiR_k: array, real part of the wave packet in the wave number space.
-        psiI_k: array, imaginary part of the wave packet in the wave number space.
-    
+        cR: float, real part of the Fourier coefficient.
+        cI: float, imaginary part of the Fourier coefficient.
     '''
-    Xsteps = int(L/dx)
-    k = np.fft.fftfreq(Xsteps+2, d=dx)
-    k = np.fft.fftshift(k)
-    psiR_k = np.fft.fft(psiR)
-    psiI_k = np.fft.fft(psiI)
+    k = -k_in
+    Nx = psiR.size
+    dx = L / (Nx - 1)
 
-    return k, psiR_k, psiI_k
+    cR = 0.5 * dx * (psiR[0] + psiR[-1] * np.cos(k * L) - psiI[-1] * np.sin(k * L))
+    cI = 0.5 * dx * (psiI[0] + psiR[-1] * np.sin(k * L) + psiI[-1] * np.cos(k * L))
+    for i in range(1, Nx - 1):
+        x = dx * i
+        cR += dx * (psiR[i] * np.cos(k * x) - psiI[i] * np.sin(k * x))
+        cI += dx * (psiR[i] * np.sin(k * x) + psiI[i] * np.cos(k * x))
+    cR /= (2 * np.pi)
+    cI /= (2 * np.pi)
 
-def plot_fourier_transform(k, psiR_k, psiI_k):
-    '''Plot the Fourier transform of the wave packet.
-    
-    - input:
-        k: array, wave number grid.
-        psiR_k: array, real part of the wave packet in the wave number space.
-        psiI_k: array, imaginary part of the wave packet in the wave number space.
-    
-    '''
-    plt.figure()
-    plt.plot(k, psiR_k, label='psi_Re(k)')
-    plt.plot(k, psiI_k, label='psi_Im(k)')
-    plt.legend()
-    plt.title('Fourier transform of the wave packet')
-    plt.savefig('fouriertransform.png')
-    plt.close()
+    return cR, cI
 
+
+def write_mom(file,psiI, psiR, L):
+    Nk = 1000
+    k0 = 3
+    kb = 1.5*k0
+    ka = -kb
+
+    dk = (kb - ka) / (Nk -1)
+    with open(file, 'w') as f:
+        f.write('#k, cR, cI\n')
+        for i in range(Nk):
+            k = ka + i*dk
+            cR, cI = fourier_transform(k, psiR, psiI, L)
+            f.write(f'{k}    {cR}    {cI}    {cR**2 + cI**2}\n')
+        f.close()
+    print('Fourier coefficients written to fourier.dat')    
