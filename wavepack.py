@@ -9,7 +9,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 # Equation of motion of real part and imaginary part
 integrate = 'rk4'           # 'euler' or 'rk4'
-potential = 'barrier'       # 'free' or 'barrier'
+potential = 'free'       # 'free' or 'barrier' or 'harmonic' or 'morse'
 dx = 0.1
 m = 1
 h_bar = 1
@@ -20,11 +20,11 @@ k0 = 3
 x0 = -20
 tfinal = 50
 
-A = 1 / (np.pi*sigma_x**2)**0.25
+#A = 1 / (np.pi*sigma_x**2)**0.25
 
 #----------------Inicialització dels paquets d'ones----------------
 
-x, psiR, psiI, psiR_0, psiI_0, V, pot, dt, Tsteps, Xsteps = initial_conditions(A, x0, sigma_x, k0, w0, L, tfinal, dx, potential, integrate)
+x, psiR, psiI, psiR_0, psiI_0, V, pot, dt, Tsteps, Xsteps, sigma_x, A = initial_conditions(x0, sigma_x, k0, w0, L, tfinal, dx, potential, integrate)
 
 welcome(integrate, dt, dx, L, A, x0, sigma_x, k0, w0, tfinal, potential)
 

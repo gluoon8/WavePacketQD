@@ -16,14 +16,14 @@ def dens_prob(A, x0, sigma_x, x):
 def norm(psiI,psiR, dx):
     return np.sum(abs(psiI)**2 + abs(psiR)**2) * dx 
 
-def get_potential(potential, x, Xsteps, x0):
+def get_potential(potential, x, Xsteps, x0, sigma):
     if potential == 'free':
         V = np.zeros(Xsteps+1)
         pot = 0
 
     elif potential == 'barrier':
         V = np.zeros(Xsteps+1)
-        V[int(Xsteps/2):int(Xsteps/2)+50] = 4  # Barrier in the middle of the grid.
+        V[int(Xsteps/2):int(Xsteps/2)+50] = 5.5  # Barrier in the middle of the grid.
 
         pot = 1
 
@@ -35,6 +35,7 @@ def get_potential(potential, x, Xsteps, x0):
         pot = 2
 
     elif potential ==  'morse':
+        sigma = 3
         D = 10
         a = 0.075
         V = D * (1 - np.exp(-a*(x-x0)))**2
@@ -44,9 +45,9 @@ def get_potential(potential, x, Xsteps, x0):
     else:
         raise ValueError('Potential not defined')
 
-    return V, pot
+    return V, pot, sigma
 
-def initial_conditions(A, x0, sigma_x, k0, w0, L, tfinal, dx, potential, integrate):
+def initial_conditions(x0, sigma_x, k0, w0, L, tfinal, dx, potential, integrate):
     '''Initial conditions for the wave packet.
     
     - input:
@@ -71,10 +72,10 @@ def initial_conditions(A, x0, sigma_x, k0, w0, L, tfinal, dx, potential, integra
     elif integrate == 'rk4':
         dt = 1e-4
 
-
+    A = 1 / (np.pi*sigma_x**2)**0.25
     Xsteps = int(L/dx) + 1
     Tsteps = int(tfinal/dt)
-
+    #print('Xsteps', Xsteps)
     x = np.linspace(-L/2, L/2, Xsteps+1) 
 
     psiR = real_psi(A, x0, sigma_x, k0, w0, x, t=0)
@@ -99,11 +100,11 @@ def initial_conditions(A, x0, sigma_x, k0, w0, L, tfinal, dx, potential, integra
     plt.savefig('wavepacketinitial.png')
     plt.close()
 
-    V, pot = get_potential(potential, x, Xsteps, x0)
+    V, pot, sigma_x = get_potential(potential, x, Xsteps, x0, sigma_x)
 
 
 
-    return x, psiR, psiI, psiR_0, psiI_0, V, pot, dt, Tsteps, Xsteps
+    return x, psiR, psiI, psiR_0, psiI_0, V, pot, dt, Tsteps, Xsteps, sigma_x, A
     
 def welcome(integrate, dt, dx, L, A, x0, sigma_x, k0, w0, tfinal, potential):
     print('----------------------')
@@ -118,13 +119,13 @@ def welcome(integrate, dt, dx, L, A, x0, sigma_x, k0, w0, tfinal, potential):
     print('')
     print(f'integration method: {integrate}')
     print(f'potential: {potential}')
-    print(f'dt:     {dt} s')
-    print(f'dx:     {dx} m')
-    print(f'L:      {L} m')
-    print(f'x0:     {x0} m')
-    print(f'sigma:  {sigma_x} m')
-    print(f'k0:     {k0} m')
-    print(f'w0:     {w0} m')
+    print(f'dt:     {dt}')
+    print(f'dx:     {dx}')
+    print(f'L:      {L}')
+    print(f'x0:     {x0}')
+    print(f'sigma:  {sigma_x}')
+    print(f'k0:     {k0}')
+    print(f'w0:     {w0}')
     print(f'')    
     print(f'simulation time: {tfinal} s')
     print(f'')
@@ -234,39 +235,51 @@ def plot_wave_packet(x, psiR, psiI, i, dt,pot, V, dx, L):
 
     '''
 
-    plt.figure()
+    plt.figure(figsize=(5, 2.5), dpi=100)
+    plt.ylabel('$\psi$')
+    
 
     if pot == 1:
-        plt.plot(x, V, label='Barrier')
-        plt.plot(x, psiR + 4.5, label='psi_Re')
-        plt.plot(x, psiI + 4.5, label='psi_Im')
-        plt.plot(x, abs(psiR)**2 + abs(psiI)**2 + 4.5, label='|psi|^2')
-        plt.ylim(-0.5, 7)
+        plt.plot(x, V*0.1, label='Barrier')
+        plt.plot(x, psiR , label='$\psi(x)_R$', color='blue', linewidth=1)
+        plt.plot(x, psiI , label='$\psi(x)_I$', color='red' , linewidth=1)
+        plt.plot(x, abs(psiR)**2 + abs(psiI)**2 , label='$|\psi(x)|^2$', color='green', linewidth=2)
+        plt.ylim(-0.5, 0.5)
+        plt.xlabel('x')
 
     elif pot == 2:
         plt.plot(x, V, label='Harmonic potential')
-        plt.plot(x, psiR + 4.5, label='psi_Re')
-        plt.plot(x, psiI + 4.5, label='psi_Im')
-        plt.plot(x, abs(psiR)**2 + abs(psiI)**2+ 4.5, label='|psi|^2')
+        plt.plot(x, 3*psiR + 4.5, label='$\psi(x)_R$', color='blue', linewidth=1)
+        plt.plot(x, 3*psiI + 4.5, label='$\psi(x)_I$', color='red', linewidth=1)
+        plt.plot(x, abs(psiR)**2 + abs(psiI)**2+ 4.5, label='$|\psi(x)|^2$',color='green', linewidth=2)
         plt.ylim(-0.5, 7)
+        plt.xlabel('x')
     elif pot == 3:
         Vplot = np.copy(V)
-        plt.plot(x, Vplot, label='Morse potential')
-        plt.plot(x, psiR + 4.5, label='psi_Re')
-        plt.plot(x, psiI + 4.5, label='psi_Im')
-        plt.plot(x, abs(psiR)**2 + abs(psiI)**2+ 4.5, label='|psi|^2')
+        plt.plot(x, Vplot * 0.8, label='Morse potential')
+        plt.plot(x, 3*psiR +4.5 , label='$\psi(x)_R$', color='blue', linewidth=1)
+        plt.plot(x, 3*psiI + 4.5, label='$\psi(x)_I$', color='red', linewidth=1)
+        plt.plot(x, abs(psiR)**2 + abs(psiI)**2+ 4.5, label='$|\psi(x)|^2$',color='green', linewidth=2)
         plt.ylim(-0.5, 10)
+        plt.xlabel('x')
     else:
-        plt.plot(x, psiR, label='psi_Re')
-        plt.plot(x, psiI, label='psi_Im')
-        plt.plot(x, abs(psiR)**2 + abs(psiI)**2, label='|psi|^2')
-    
+        plt.plot(x, psiR, label='$\psi(x)_R$', color='blue', linewidth=1)
+        plt.plot(x, psiI, label='$\psi(x)_I$', color='red', linewidth=1)
+        plt.plot(x, abs(psiR)**2 + abs(psiI)**2, label='$|\psi(x)|^2$', color='green', linewidth=2)
+        plt.ylim(-0.4, 0.4)
+        plt.xlabel('x')
+
+
     T, R = transmission_coefficient(psiR, psiI, dx, L)
-    plt.text(0, 0.4, f'T = {T:.2f}, R = {R:.2f}', fontsize=12)
-    plt.legend()
+    #plt.text(0, 0.4, f'T = {T:.2f}, R = {R:.2f}', fontsize=12)
+    #plt.legend(loc='upper right',shadow=True, fancybox=True)
+    if i == 0:
+        plt.legend(loc='upper right',shadow=True, fancybox=True)
+
     plt.xlim(-L/2 * 1000, L/2 * 1000)
-    plt.title(f'Time: {i*dt:2f}')
-    
+    plt.title(f't = {int(i*dt)}')
+    plt.xlabel('x')
+    plt.tight_layout()
     filename = f'wavepacket{i}.png'
     plt.savefig(filename)
     plt.close()
