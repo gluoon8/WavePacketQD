@@ -35,7 +35,7 @@ def get_potential(potential, x, Xsteps, x0, sigma):
         pot = 2
 
     elif potential ==  'morse':
-        sigma = 3
+        sigma = 2
         D = 10
         a = 0.075
         V = D * (1 - np.exp(-a*(x-x0)))**2
@@ -68,7 +68,7 @@ def initial_conditions(x0, sigma_x, k0, w0, L, tfinal, dx, potential, integrate)
     
     '''
     if integrate == 'euler':
-        dt = 1e-5
+        dt = 0.5e-5
     elif integrate == 'rk4':
         dt = 1e-4
 
@@ -89,17 +89,6 @@ def initial_conditions(x0, sigma_x, k0, w0, L, tfinal, dx, potential, integrate)
     psiR_0 = np.copy(psiR)
     psiI_0 = np.copy(psiI)
 
-    # Plot initial conditions:
-    plt.figure()
-    plt.title('t = 0 s')
-    plt.plot(x, psiR_0,label='psi_Re')
-    plt.plot(x, psiI_0, label='psi_Im')
-    plt.xlabel('t')
-    plt.ylabel('psi')
-    plt.legend()
-    plt.savefig('wavepacketinitial.png')
-    plt.close()
-
     V, pot, sigma_x = get_potential(potential, x, Xsteps, x0, sigma_x)
 
 
@@ -107,15 +96,19 @@ def initial_conditions(x0, sigma_x, k0, w0, L, tfinal, dx, potential, integrate)
     return x, psiR, psiI, psiR_0, psiI_0, V, pot, dt, Tsteps, Xsteps, sigma_x, A
     
 def welcome(integrate, dt, dx, L, A, x0, sigma_x, k0, w0, tfinal, potential):
-    print('----------------------')
+    print('-----------------------------------')
     print('')
-    print('WAVE PACKET SIMULATION')
+    print('       WAVE PACKET SIMULATION')
     print('')
-    print('----------------------')
+    print('-----------------------------------')
     print('Author: Manel Serrano Rodríguez')
     print('Subject: Quantum Dynamics')
+    print('Universitat de Barcelona')
+    print('-----------------------------------')
+    print('')   
+    print('www.github.com/gluoon8/WavePacketQD')
     print('')
-    print('----------PARAMETERS----------')
+    print('-------------PARAMETERS------------')
     print('')
     print(f'integration method: {integrate}')
     print(f'potential: {potential}')
@@ -259,7 +252,7 @@ def plot_wave_packet(x, psiR, psiI, i, dt,pot, V, dx, L):
         plt.plot(x, Vplot * 0.8, label='Morse potential')
         plt.plot(x, 3*psiR +4.5 , label='$\psi(x)_R$', color='blue', linewidth=1)
         plt.plot(x, 3*psiI + 4.5, label='$\psi(x)_I$', color='red', linewidth=1)
-        plt.plot(x, abs(psiR)**2 + abs(psiI)**2+ 4.5, label='$|\psi(x)|^2$',color='green', linewidth=2)
+        plt.plot(x, 8*(abs(psiR)**2 + abs(psiI)**2)+ 4.5, label='$|\psi(x)|^2$',color='green', linewidth=2)
         plt.ylim(-0.5, 10)
         plt.xlabel('x')
     else:
@@ -276,11 +269,11 @@ def plot_wave_packet(x, psiR, psiI, i, dt,pot, V, dx, L):
     if i == 0:
         plt.legend(loc='upper right',shadow=True, fancybox=True)
 
-    plt.xlim(-L/2 * 1000, L/2 * 1000)
+    plt.xlim(-L/2, L/2)
     plt.title(f't = {int(i*dt)}')
     plt.xlabel('x')
     plt.tight_layout()
-    filename = f'wavepacket{i}.png'
+    filename = f'WP_{i*dt}.png'
     plt.savefig(filename)
     plt.close()
 
@@ -352,4 +345,35 @@ def write_mom(file,psiI, psiR, L):
             cR, cI = fourier_transform(k, psiR, psiI, L)
             f.write(f'{k}    {cR}    {cI}    {cR**2 + cI**2}\n')
         f.close()
-    print('Fourier coefficients written to fourier.dat')    
+    print(f'Fourier transform written to file {file}')    
+
+def plot_fourier(file, i, dt):
+    data = np.loadtxt(file,skiprows=1)
+    plt.figure(figsize=(5, 2.5), dpi=100)
+    plt.grid(alpha=0.5)
+    plt.plot(data[:,0], data[:,3], color='#FC0A57', linewidth=1.5)
+    plt.xlabel('k')
+    plt.ylabel('A(k)')
+    plt.ylim(-0.025, 0.6)
+    plt.xlim(-4.5, 4.5)         # Change the limits of the x-axis 
+    plt.tight_layout()
+    plt.savefig(f'TF_{i*dt}.png')
+    plt.close()
+
+
+def coeficients_R_T(psiR, psiI, dx, Xsteps, pot, norma_0):
+    if pot == 1: 
+        normafinal = norm(psiI[:int(Xsteps/2)], psiR[:int(Xsteps/2)], dx)
+    
+    if pot == 2:
+        normafinal = norm(psiI[180:420], psiR[180:420], dx)
+    
+    if pot == 3:
+        normafinal = norm(psiI[220:470], psiR[220:470], dx)
+
+    if pot == 0:
+        normafinal = norm(psiI, psiR, dx)
+
+    R = normafinal/norma_0
+    T = 1 - R
+    return R, T, normafinal
