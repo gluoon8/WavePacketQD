@@ -39,7 +39,7 @@ And results will appear in your /out directory!
                           
 
 - Commands:                                                       
-  **Serial mode only**
+
   - `make run`: Runs the simulation.     
   
   - `make prerequisites`: Install required python modules to run the program:                              
