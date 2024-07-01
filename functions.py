@@ -35,7 +35,7 @@ def get_potential(potential, x, Xsteps, x0, sigma):
         pot = 2
 
     elif potential ==  'morse':
-        sigma = 2
+        sigma = 3
         D = 10
         a = 0.075
         V = D * (1 - np.exp(-a*(x-x0)))**2
@@ -369,7 +369,9 @@ def coeficients_R_T(psiR, psiI, dx, Xsteps, pot, norma_0):
         normafinal = norm(psiI[180:420], psiR[180:420], dx)
     
     if pot == 3:
+        # normafinal = norm(psiI[300:511], psiR[300:511], dx)   # Per a t = 11
         normafinal = norm(psiI[220:470], psiR[220:470], dx)
+
 
     if pot == 0:
         normafinal = norm(psiI, psiR, dx)

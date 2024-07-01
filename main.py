@@ -6,7 +6,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 #-------------------------System parameters------------------------
 integrate = 'rk4'         # 'euler' or 'rk4'
-potential = 'harmonic'      # 'free' or 'barrier' or 'harmonic' or 'morse'
+potential = 'morse'      # 'free' or 'barrier' or 'harmonic' or 'morse'
 dx = 0.1
 m = 1
 h_bar = 1
@@ -15,7 +15,7 @@ sigma_x = 5
 w0 = 2
 k0 = 3
 x0 = -20
-tfinal = 11 
+tfinal = 18
 
 #A = 1 / (np.pi*sigma_x**2)**0.25
 
@@ -63,7 +63,7 @@ filename = plot_wave_packet(x, psiR, psiI, i, dt, pot, V, dx, L)
 image_files.append(filename)
 
     # Create the GIF using the image files
-with imageio.get_writer('wavepacket.gif', mode='I') as writer:
+with imageio.get_writer('WP.gif', mode='I') as writer:
     for filename in image_files:
         image = imageio.imread(filename)
         writer.append_data(image)
@@ -99,5 +99,5 @@ print('Time: ', final_time, 's')
 # np.savetxt('psi2.dat', psi2, delimiter='\t', header='x\tpsi2', comments='')
 
 
-# Save the data to a file
-np.savetxt('output.txt', data, delimiter='\t', header='time\tnorma', comments='')
+# Save the data of the norm to a file
+np.savetxt('norm.dat', data, delimiter='\t', header='time\tnorma', comments='')

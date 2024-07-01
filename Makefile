@@ -1,6 +1,6 @@
 # Makefile for wavepacket simulation
 
-# Compiler 
+# Author: Manel Serrano
 
 help:
 	@echo "make run - run the simulation"
@@ -8,11 +8,7 @@ help:
 	@echo "make clean - remove all output files"
 
 run: 
-	python3 wavepack.py
-	make clean
-
-norm:
-	python3 norm.py
+	python3 main.py
 
 prerequisites:
 	pip install numpy
@@ -21,4 +17,4 @@ prerequisites:
 	pip install imageio
 
 clean:
-	rm -f out/wave*.png
+	rm -f out/WP*.png out/*FT.dat 
