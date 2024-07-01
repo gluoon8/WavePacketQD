@@ -8,7 +8,7 @@ Some examples are shown in the ***examples*** directory.
 
 ## Prerequisites
 To execute the program, there are some pre-requisites, that can be installed on your first run on Linux with 'make prerequisites':
-- Make: to execute the program (https://www.gnu.org/software/make/#download).
+- Make: to execute the program, not required on windows (https://www.gnu.org/software/make/#download).
 - Python 3.x : to carry out the simulation.
   - Numpy (https://numpy.org/install/)
   - Matplotlib (https://matplotlib.org/stable/users/installing/index.html)
@@ -18,12 +18,17 @@ To execute the program, there are some pre-requisites, that can be installed on 
 
 ## How to
 
+### Linux
+
 1. Clone repository to your local host
 2. Use `make` or `make help` to see available commands.
 3. Before starting a simulation, change your parameters in main.py file  
 5. To carry out the simulation, have a look to the ***quick quide***. 
 6. Data is generated in out directory.
 
+### Windows
+
+Use the command 'python3 main.py' in your cmd terminal. 
 
 ## Quick guide
 
