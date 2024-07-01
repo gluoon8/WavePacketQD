@@ -7,7 +7,8 @@ This project involves the development of a code to simulate the propagation of a
 Some examples are shown in the ***examples*** directory.
 
 ## Prerequisites
-To execute the program, there are some pre-requisites, that can be installed on your first run on Linux with 'make prerequisites':
+
+To execute the program, there are some pre-requisites, that can be installed on your first run on Linux with `make prerequisites`` :
 - Make: to execute the program, not required on windows (https://www.gnu.org/software/make/#download).
 - Python 3.x : to carry out the simulation.
   - Numpy (https://numpy.org/install/)
@@ -28,7 +29,7 @@ To execute the program, there are some pre-requisites, that can be installed on 
 
 ### Windows
 
-Use the command 'python3 main.py' in your cmd terminal. 
+Use the command `python3 main.py` in your cmd terminal. 
 
 ## Quick guide
 
